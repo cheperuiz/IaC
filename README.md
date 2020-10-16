@@ -1,6 +1,9 @@
 ## Assuming you have these prerequisites:
 
 - KVM/QEMU installed and correctly configured
+- Download and build (`go build`) [Terraform Provider for libvirt](https://github.com/dmacvicar/terraform-provider-libvirt)
+  - place the binary in `~/.local/share/terraform/plugins/registry.terraform.io/dmacvicar/libvirt/0.6.2/linux_amd64`
+- For more info check this post: https://github.com/dmacvicar/terraform-provider-libvirt/issues/747#issuecomment-678575669
 - Terraform >= 0.13
 - Ansible installed
 - an ssh identity in ~/.ssh/terraform
