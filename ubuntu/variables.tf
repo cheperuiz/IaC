@@ -5,7 +5,8 @@ variable "libvirt_disk_path" {
 
 variable "ubuntu_18_img_url" {
   description = "ubuntu 18.04 image"
-  default     = "http://cloud-images.ubuntu.com/releases/bionic/release-20191008/ubuntu-18.04-server-cloudimg-amd64.img"
+  default = "https://cloud-images.ubuntu.com/releases/focal/release-20201014/ubuntu-20.04-server-cloudimg-amd64.img"
+  # default     = "http://cloud-images.ubuntu.com/releases/bionic/release-20191008/ubuntu-18.04-server-cloudimg-amd64.img"
 }
 
 variable "vm_hostname" {

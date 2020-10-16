@@ -40,6 +40,11 @@ resource "libvirt_domain" "domain-ubuntu" {
   vcpu   = 1
 
   cloudinit = libvirt_cloudinit_disk.commoninit.id
+  
+  cpu = {
+    mode            = "host-passthrough"
+    check           = "partial"
+  }
 
   network_interface {
     network_name   = "default"
@@ -92,7 +97,9 @@ resource "libvirt_domain" "domain-ubuntu" {
       echo "${libvirt_domain.domain-ubuntu.network_interface[0].addresses[0]}" >> nginx.ini
       echo "[nginx:vars]" >> nginx.ini
       echo "ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'" >> nginx.ini
+
       ansible-playbook -u ${var.ssh_username} --private-key ${var.ssh_private_key} -i nginx.ini ansible/playbook.yml
+
       rm nginx.ini
       EOT
   }
