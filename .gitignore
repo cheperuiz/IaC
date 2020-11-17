@@ -1,6 +1,11 @@
 # Local .terraform directories
 **/.terraform/*
 
+#Ansible roles directory
+**/ansible/roles*/**
+**/ansible/roles*/rancher*/**
+**/ansible/secrets.ini
+
 # .tfstate files
 *.tfstate
 *.tfstate.*

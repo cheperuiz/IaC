@@ -1,0 +1,4 @@
+[${group_name}]
+%{ for index,node_name in node_names ~}
+${node_name} ansible_host=${node_ips[index]} ansible_python_interpreter=/usr/bin/python3
+%{ endfor ~}

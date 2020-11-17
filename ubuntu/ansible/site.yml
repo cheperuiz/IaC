@@ -1,0 +1,3 @@
+---
+- import_playbook: rancher_2_kubernetes_node.yml
+- import_playbook: rancher_2_load_balancer.yml

@@ -1,0 +1,64 @@
+---
+all:
+  hosts:
+  %{ for index,lb_ip in lb_ips ~}
+  loadbalancer-${index}:
+      ansible_host: ${lb_ip}
+  %{ endfor }
+  %{ for index in range(num_rk8s_master_nodes) ~}
+  master-${index}:
+      ansible_host: ${node_ips[index]}
+  %{ endfor }
+  %{ for index in range(num_rk8s_etcd_nodes) ~}
+  etcd-${index}:
+      ansible_host: ${node_ips[etcd_node_offset  + index]}
+  %{ endfor }
+  %{ for index in range(num_rk8s_controlplane_nodes) ~}
+  controlplane-${index}:
+      ansible_host: ${node_ips[controlplane_node_offset + index]}
+  %{ endfor }
+  %{ for index in range(num_rk8s_worker_nodes) ~}
+  worker-${index}:
+      ansible_host: ${node_ips[worker_node_offset + index]}
+  %{ endfor }
+
+  children:
+    rancher_2_kubernetes_nodes:
+      children:
+      %{ if num_rk8s_master_nodes > 0 ~}  
+  master:
+          hosts:
+      %{ for index in range(num_rk8s_master_nodes) ~}
+      master-${index}:
+      %{ endfor } 
+      %{ endif }
+      %{ if num_rk8s_etcd_nodes > 0 ~}
+  etcd:
+          hosts:
+      %{ for index in range(num_rk8s_etcd_nodes) ~}
+      etcd-${index}:
+      %{ endfor } 
+      %{ endif } 
+      %{ if num_rk8s_controlplane_nodes > 0 ~}
+  controlplane:
+          hosts:
+      %{ for index in range(num_rk8s_controlplane_nodes) ~}
+      controlplane-${index}:
+      %{ endfor }
+      %{ endif }
+      %{ if num_rk8s_worker_nodes > 0 ~}
+  worker:
+          hosts:
+      %{ for index in range(num_rk8s_worker_nodes) ~}
+      worker-${index}:
+      %{ endfor }
+      %{ endif }
+    rancher_2_kubernetes_load_balancers:
+      children:
+        loadbalancer:
+          hosts:
+      %{ for index in range(num_rk8s_lbs) ~}
+      loadbalancer-${index}:
+      %{ endfor }
+
+

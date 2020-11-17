@@ -1,0 +1,13 @@
+nodes:
+  %{ for index in range(num_rk8s_rancher_nodes) ~}
+- address: ${node_ips[index]}
+    user: rancherk8s
+    role: [etcd,controlplane,worker]
+    ssh_key_path: ${ssh_key}
+  %{ endfor }
+
+services:
+  etcd:
+    snapshot: true
+    creation: 6h
+    retention: 24h

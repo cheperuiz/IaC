@@ -1,0 +1,14 @@
+---
+- src: geerlingguy.pip
+
+- src: geerlingguy.docker
+
+- src: geerlingguy.firewall
+
+- src: singleplatform-eng.users
+
+- src: jdauphant.nginx
+
+- src: nginxinc.nginx
+
+- src: nginxinc.nginx_config
