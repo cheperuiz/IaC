@@ -25,6 +25,13 @@ data "template_file" "lb_network_config" {
   template = file("${path.module}/config/loadbalancer/network_config.yml")
 }
 
+resource "libvirt_cloudinit_disk" "lbinit" {
+  name           = "lbinit.iso"
+  user_data      = data.template_file.lb_data.rendered
+  network_config = data.template_file.lb_network_config.rendered
+  pool           = libvirt_pool.rk8s-pool.name
+}
+
 data "template_file" "node_data" {
   template = file("${path.module}/config/node/cloud_init.yml")
 }
@@ -39,18 +46,12 @@ resource "libvirt_cloudinit_disk" "nodeinit" {
   pool           = libvirt_pool.rk8s-pool.name
 }
 
-resource "libvirt_cloudinit_disk" "lbinit" {
-  name           = "lbinit.iso"
-  user_data      = data.template_file.lb_data.rendered
-  network_config = data.template_file.lb_network_config.rendered
-  pool           = libvirt_pool.rk8s-pool.name
-}
 
-resource "libvirt_network" "rk8s_internal_net" {
-  name = "rk8s_internal_net"
-  mode = "nat"
-  addresses = ["192.168.122.0/24", "2001:db8:ca2:2::1/64"]
-}
+# resource "libvirt_network" "rk8s_internal_net" {
+#   name = "rk8s_internal_net"
+#   mode = "nat"
+#   addresses = ["192.168.122.0/24"]
+# }
 
 resource "libvirt_volume" "rk8s-lb-volume" {
   count = var.num_rk8s_lbs
@@ -85,7 +86,7 @@ resource "libvirt_domain" "domain-rk8s-lb" {
   }
 
   network_interface {
-    network_name   = libvirt_network.rk8s_internal_net.name
+    network_name   = "default" # libvirt_network.rk8s_internal_net.name
     wait_for_lease = true
     hostname       = "${var.vm_hostname}-node-${count.index}"
   }
@@ -155,7 +156,7 @@ resource "libvirt_domain" "domain-rk8s-node" {
   }
 
   network_interface {
-    network_name   = libvirt_network.rk8s_internal_net.name
+    network_name   = "default" # libvirt_network.rk8s_internal_net.name
     wait_for_lease = true
     hostname       = "${var.vm_hostname}-node-${count.index}"
   }
