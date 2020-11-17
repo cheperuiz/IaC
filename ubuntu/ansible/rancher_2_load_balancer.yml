@@ -6,9 +6,20 @@
   become_method: sudo
 
   vars:
+    users:
+      - username: rancherk8s
+        name: Load Balancer
+        password: "{{ lookup('ini', 'password section=rancher_2_kubernetes_node file=secrets.ini') }}"
+        groups: ['docker']
+        uid: 1001
+        ssh_key:
+          - "{{ lookup('ini', 'ssh_key section=rancher_2_kubernetes_node file=secrets.ini') }}"
+
     firewall_allowed_tcp_ports:
       - "22"
       - "80"
+      - "443"
+
     nginx_installation_type: configuration-only
 
     nginx_worker_rlimit_nofile: 40000
@@ -47,5 +58,7 @@
   roles: 
   # - rancher.common
   - geerlingguy.firewall
+  - geerlingguy.docker
+  - singleplatform-eng.users
   - nginxinc.nginx
-  # - jdauphant.nginx
+  - jdauphant.nginx

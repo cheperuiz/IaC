@@ -20,7 +20,8 @@ output "load-balancers" {
 }
 
 output "lb_ips" {
-  value = libvirt_domain.domain-rk8s-lb.*.network_interface.0.addresses.0
+  value = [libvirt_domain.domain-rk8s-lb.*.network_interface.0.addresses.0,
+          libvirt_domain.domain-rk8s-lb.*.network_interface.1.addresses.0]
 
 }
 

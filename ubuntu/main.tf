@@ -207,6 +207,7 @@ resource "local_file" "rk8s-node-inventory" {
     node_ips = libvirt_domain.domain-rk8s-node.*.network_interface.0.addresses.0
   })
   filename = "ansible/rk8s_node_inventory.ini"
+  file_permission = "644"
 }
 
 resource "local_file" "rk8s-lb-inventory" {
@@ -217,6 +218,7 @@ resource "local_file" "rk8s-lb-inventory" {
     node_ips = libvirt_domain.domain-rk8s-lb.*.network_interface.0.addresses.0
   })
   filename = "ansible/rk8s_lb_inventory.ini"
+  file_permission = "644"
 }
 
 resource "local_file" "rk8s-inventory" {
@@ -239,6 +241,7 @@ resource "local_file" "rk8s-inventory" {
     worker_node_offset = var.worker_node_offset
   })
   filename = "ansible/rk8s_inventory.yml"
+  file_permission = "644"
 }
 
 resource "local_file" "rancher_cluster" {
@@ -252,4 +255,15 @@ resource "local_file" "rancher_cluster" {
     ssh_key = var.ssh_private_key
   })
   filename = "rancher/rancher_cluster.yml"
+  file_permission = "644"
+}
+
+
+resource "local_file" "nginx_conf" {
+  content = templatefile("templates/nginx.conf.j2",
+  {
+    node_ips = libvirt_domain.domain-rk8s-node.*.network_interface.0.addresses.0
+  })
+  filename = "nginx/nginx.conf"
+  file_permission = "644"
 }

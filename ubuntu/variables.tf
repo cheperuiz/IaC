@@ -30,7 +30,7 @@ variable "num_rk8s_lbs" {
 
 variable "num_rk8s_nodes" {
   description = "the number of nodes to be provisioned"
-  default = 3
+  default = 8
 }
 
 variable "num_rk8s_rancher_nodes"{
@@ -40,7 +40,7 @@ variable "num_rk8s_rancher_nodes"{
 
 variable "num_rk8s_master_nodes"{
   description = "the number of nodes to run both etcd and controlplane"
-  default = 0
+  default = 3
 }
 
 variable "num_rk8s_etcd_nodes" {
@@ -65,10 +65,10 @@ variable "controlplane_node_offset" {
 
 variable "num_rk8s_worker_nodes" {
   description = "the number of rk8s nodes to be assigned as workers"
-  default = 0
+  default = 2
 }
 
 variable "worker_node_offset" {
   description = "index of the first worker node"
-  default = 0
+  default = 3
 }
