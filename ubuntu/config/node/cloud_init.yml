@@ -1,0 +1,41 @@
+#cloud-config
+# vim: syntax=yaml
+# examples:
+# https://cloudinit.readthedocs.io/en/latest/topics/examples.html
+
+bootcmd:
+  - echo 192.168.0.1 gw.homedns.xyz >> /etc/hosts
+
+ssh_pwauth: True
+
+disable_root: False
+
+chpasswd:
+  list: |
+     ubuntu:linux
+  expire: False
+
+users:
+  - name: ubuntu
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: users, admin
+    home: /home/ubuntu
+    shell: /bin/bash
+    lock_passwd: False
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDMxwaebcrtlYLj9O8zzy3TSdgrhj5D2CX+3H2AQt3zyEL3PrujnEso2rn5VW9AXyxDIHKg2V5LzCVYp10/w2t0fsdUX+KS1ZYo8LWYcaAj1+rMoHQMlYzcghroMtlC/yO5dC6dqdOkL/6F8CXWuaTp4y/JslR9VCHpOBdGqAAWqLRokyLM44i28P9zIESR0YxvNhBKqQFbAadI2af3EqhNMAV/defm5oVtdm3iU6y/Aq6OxUGRr7QWmcKeoqpUGkj8GkpOBWa+EGEXBHF1ow+7ySpDdS6Y8PO7YQ6NdxyOZ4ZC1ucC91lTWu5K2RVHjqJsWzQ4+PolUmozpAxYuGKlNKucv8zycgMIzfGE5nT16exoBe/OUKTiOjiC6KNak/xWgOco1lcSTDvGD58FuV1PG350pjlEWNtnCbBY8+B7J83oC7tZLSatV8H2NeuKZTTkWQs3CGyz+MIXzaEucyAzpdMe3zSK5UXyxFT9QNXZP23R6LMHyIWSzDnMiHkDGJs= pxuser@pxarch
+
+growpart:
+  mode: auto
+  devices: ['/']       
+
+# package_update: true
+# packages:
+#   qemu-guest-agent
+
+# runcmd:
+#  - [systemctl, enable, qemu-guest-agent]
+#  - [systemctl, start, qemu-guest-agent]
+
+
+final_message: "The system is finally up, after $UPTIME seconds"

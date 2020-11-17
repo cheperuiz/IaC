@@ -23,20 +23,19 @@ variable "ssh_private_key" {
   default     = "~/.ssh/terraform"
 }
 
-
-variable "num_rk8s_nodes" {
-  description = "the number of nodes to be provisioned"
-  default = 0
-}
-
 variable "num_rk8s_lbs" {
   description = "the number of load balancers to be provisioned"
   default = 1
 }
 
+variable "num_rk8s_nodes" {
+  description = "the number of nodes to be provisioned"
+  default = 3
+}
+
 variable "num_rk8s_rancher_nodes"{
   description = "the number of nodes to run all roles for HA Rancher 2"
-  default = 0
+  default = 3
 }
 
 variable "num_rk8s_master_nodes"{

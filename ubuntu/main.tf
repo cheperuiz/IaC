@@ -17,58 +17,40 @@ resource "libvirt_volume" "ubuntu-qcow2" {
 }
 
 
-data "template_file" "user_data" {
-  template = file("${path.module}/config/cloud_init.yml")
+data "template_file" "lb_data" {
+  template = file("${path.module}/config/loadbalancer/cloud_init.yml")
 }
 
-data "template_file" "network_config" {
-  template = file("${path.module}/config/network_config.yml")
+data "template_file" "lb_network_config" {
+  template = file("${path.module}/config/loadbalancer/network_config.yml")
 }
 
-resource "libvirt_cloudinit_disk" "commoninit" {
-  name           = "commoninit.iso"
-  user_data      = data.template_file.user_data.rendered
-  network_config = data.template_file.network_config.rendered
+data "template_file" "node_data" {
+  template = file("${path.module}/config/node/cloud_init.yml")
+}
+
+data "template_file" "node_network_config" {
+  template = file("${path.module}/config/node/network_config.yml")
+}
+resource "libvirt_cloudinit_disk" "nodeinit" {
+  name           = "nodeinit.iso"
+  user_data      = data.template_file.node_data.rendered
+  network_config = data.template_file.node_network_config.rendered
   pool           = libvirt_pool.rk8s-pool.name
 }
 
-# resource "libvirt_network" "kube_network" {
-#   name = "k8snet"
-#   mode = "bridge"
-#   bridge = "br0"
-#   # addresses = ["10.0.3.0/24", "2001:db8:ca2:2::1/64"]
-#   dns {
-#     enabled = true
-#     local_only = true
-    
-#     # (Optional) one or more DNS forwarder entries.  One or both of
-#     # "address" and "domain" must be specified.  The format is:
-#     # forwarders {
-#     #     address = "my address"
-#     #     domain = "my domain"
-#     #  } 
-#     # 
+resource "libvirt_cloudinit_disk" "lbinit" {
+  name           = "lbinit.iso"
+  user_data      = data.template_file.lb_data.rendered
+  network_config = data.template_file.lb_network_config.rendered
+  pool           = libvirt_pool.rk8s-pool.name
+}
 
-#     # (Optional) one or more DNS host entries.  Both of
-#     # "ip" and "hostname" must be specified.  The format is:
-#     # hosts  {
-#     #     hostname = "my_hostname"
-#     #     ip = "my.ip.address.1"
-#     #   }
-#     # hosts {
-#     #     hostname = "my_hostname"
-#     #     ip = "my.ip.address.2"
-#     #   }
-#     # 
-
-#     # (Optional) one or more static routes.
-#     # "cidr" and "gateway" must be specified. The format is:
-#     # routes {
-#     #     cidr = "10.17.0.0/16"
-#     #     gateway = "10.18.0.2"
-#     #   }
-#   }
-# }
+resource "libvirt_network" "rk8s_internal_net" {
+  name = "rk8s_internal_net"
+  mode = "nat"
+  addresses = ["192.168.122.0/24", "2001:db8:ca2:2::1/64"]
+}
 
 resource "libvirt_volume" "rk8s-lb-volume" {
   count = var.num_rk8s_lbs
@@ -87,7 +69,7 @@ resource "libvirt_domain" "domain-rk8s-lb" {
   memory = "4090"
   vcpu   = 16
 
-  cloudinit = libvirt_cloudinit_disk.commoninit.id
+  cloudinit = libvirt_cloudinit_disk.lbinit.id
   qemu_agent = true
   
   cpu = {
@@ -96,9 +78,16 @@ resource "libvirt_domain" "domain-rk8s-lb" {
   }
 
   network_interface {
-    wait_for_lease = true
+    wait_for_lease = false
     bridge = "br0"
     hostname       = "${var.vm_hostname}-lb-${count.index}"
+    mac = "52:54:00:f2:b9:6c"
+  }
+
+  network_interface {
+    network_name   = libvirt_network.rk8s_internal_net.name
+    wait_for_lease = true
+    hostname       = "${var.vm_hostname}-node-${count.index}"
   }
 
   console {
@@ -157,7 +146,8 @@ resource "libvirt_domain" "domain-rk8s-node" {
   memory = "4090"
   vcpu   = 16
 
-  cloudinit = libvirt_cloudinit_disk.commoninit.id
+  cloudinit = libvirt_cloudinit_disk.nodeinit.id
+  qemu_agent = false
   
   cpu = {
     mode            = "host-passthrough"
@@ -165,7 +155,7 @@ resource "libvirt_domain" "domain-rk8s-node" {
   }
 
   network_interface {
-    network_name   = "default"
+    network_name   = libvirt_network.rk8s_internal_net.name
     wait_for_lease = true
     hostname       = "${var.vm_hostname}-node-${count.index}"
   }
@@ -217,9 +207,6 @@ resource "local_file" "rk8s-node-inventory" {
   })
   filename = "ansible/rk8s_node_inventory.ini"
 }
-
-
-
 
 resource "local_file" "rk8s-lb-inventory" {
   content = templatefile("templates/rk8s_inventory.ini.j2",

@@ -21,13 +21,14 @@ output "load-balancers" {
 
 output "lb_ips" {
   value = libvirt_domain.domain-rk8s-lb.*.network_interface.0.addresses.0
+
 }
 
 output "lb_inventory" {
   value = formatlist(
     "%s ansible_host=%s %s",
     libvirt_domain.domain-rk8s-lb.*.name,
-    libvirt_domain.domain-rk8s-lb.*.network_interface.0.addresses.0,
+    libvirt_domain.domain-rk8s-lb.*.network_interface.0.addresses.1,
     "ansible_python_interpreter=/usr/bin/python3"
   )
 }
