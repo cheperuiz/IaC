@@ -39,7 +39,7 @@ growpart:
 write_files:
 - path: /etc/environment
   content: |
-    NO_PROXY="10.43.0.0/16"
+    NO_PROXY=10.43.0.1
   append: true
 
 final_message: "The system is finally up, after $UPTIME seconds"
