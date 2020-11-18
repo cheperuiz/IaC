@@ -46,13 +46,6 @@ resource "libvirt_cloudinit_disk" "nodeinit" {
   pool           = libvirt_pool.rk8s-pool.name
 }
 
-
-# resource "libvirt_network" "rk8s_internal_net" {
-#   name = "rk8s_internal_net"
-#   mode = "nat"
-#   addresses = ["192.168.122.0/24"]
-# }
-
 resource "libvirt_volume" "rk8s-lb-volume" {
   count = var.num_rk8s_lbs
 
@@ -230,16 +223,18 @@ resource "local_file" "rk8s-inventory" {
     num_rk8s_lbs = var.num_rk8s_lbs
 
     num_rk8s_master_nodes = var.num_rk8s_master_nodes
+    master_node_offset = var.num_rk8s_rancher_nodes
 
     num_rk8s_etcd_nodes = var.num_rk8s_etcd_nodes
-    etcd_node_offset = var.etcd_node_offset
+    etcd_node_offset = var.num_rk8s_rancher_nodes + var.num_rk8s_master_nodes
     
     num_rk8s_controlplane_nodes = var.num_rk8s_controlplane_nodes
-    controlplane_node_offset = var.controlplane_node_offset
+    controlplane_node_offset = var.num_rk8s_rancher_nodes + var.num_rk8s_master_nodes + var.num_rk8s_etcd_nodes
     
     num_rk8s_worker_nodes = var.num_rk8s_worker_nodes
-    worker_node_offset = var.worker_node_offset
+    worker_node_offset =  var.num_rk8s_rancher_nodes + var.num_rk8s_master_nodes + var.num_rk8s_etcd_nodes + var.num_rk8s_controlplane_nodes
   })
+
   filename = "ansible/rk8s_inventory.yml"
   file_permission = "644"
 }
@@ -248,7 +243,6 @@ resource "local_file" "rancher_cluster" {
   content = templatefile("templates/rancher_cluster.yml.j2",
   {
     node_ips = libvirt_domain.domain-rk8s-node.*.network_interface.0.addresses.0
-    num_rk8s_lbs = var.num_rk8s_lbs
     
     num_rk8s_rancher_nodes = var.num_rk8s_rancher_nodes
 
@@ -258,6 +252,29 @@ resource "local_file" "rancher_cluster" {
   file_permission = "644"
 }
 
+resource "local_file" "user_cluster" {
+  content = templatefile("templates/user_cluster.yml.j2",
+  {
+    node_ips = libvirt_domain.domain-rk8s-node.*.network_interface.0.addresses.0
+    
+    num_rk8s_master_nodes = var.num_rk8s_master_nodes
+    master_node_offset = var.num_rk8s_rancher_nodes
+
+    num_rk8s_etcd_nodes = var.num_rk8s_etcd_nodes
+    etcd_node_offset = var.num_rk8s_rancher_nodes + var.num_rk8s_master_nodes
+    
+    num_rk8s_controlplane_nodes = var.num_rk8s_controlplane_nodes
+    controlplane_node_offset = var.num_rk8s_rancher_nodes + var.num_rk8s_master_nodes + var.num_rk8s_etcd_nodes
+    
+    num_rk8s_worker_nodes = var.num_rk8s_worker_nodes
+    worker_node_offset =  var.num_rk8s_rancher_nodes + var.num_rk8s_master_nodes + var.num_rk8s_etcd_nodes + var.num_rk8s_controlplane_nodes
+ 
+    ssh_key = var.ssh_private_key
+  })
+
+  filename = "rancher/user_cluster.yml"
+  file_permission = "644"
+}
 
 resource "local_file" "nginx_conf" {
   content = templatefile("templates/nginx.conf.j2",

@@ -1,0 +1,31 @@
+nodes:
+  %{ for index in range(num_rk8s_etcd_nodes) ~}
+- address: ${node_ips[etcd_node_offset + index]}
+    user: rancherk8s
+    role: [etcd]
+    ssh_key_path: ${ssh_key}
+  %{ endfor }
+  %{ for index in range(num_rk8s_controlplane_nodes) ~}
+- address: ${node_ips[controlplane_node_offset + index]}
+    user: rancherk8s
+    role: [controlplane]
+    ssh_key_path: ${ssh_key}
+  %{ endfor }
+  %{ for index in range(num_rk8s_master_nodes) ~}
+- address: ${node_ips[master_node_offset + index]}
+    user: rancherk8s
+    role: [etcd,controlplane]
+    ssh_key_path: ${ssh_key}
+  %{ endfor }
+  %{ for index in range(num_rk8s_worker_nodes) ~}
+- address: ${node_ips[worker_node_offset + index]}
+    user: rancherk8s
+    role: [worker]
+    ssh_key_path: ${ssh_key}
+  %{ endfor }
+
+services:
+  etcd:
+    snapshot: true
+    creation: 6h
+    retention: 24h

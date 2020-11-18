@@ -29,6 +29,8 @@
       - "9099"
       - "10250"
       - "10254"
+        # Application ports
+      - "8443"
     firewall_allowed_udp_ports:
       - "8472"
     firewall_additional_rules:

@@ -7,7 +7,7 @@ all:
   %{ endfor }
   %{ for index in range(num_rk8s_master_nodes) ~}
   master-${index}:
-      ansible_host: ${node_ips[index]}
+      ansible_host: ${node_ips[master_node_offset + index]}
   %{ endfor }
   %{ for index in range(num_rk8s_etcd_nodes) ~}
   etcd-${index}:

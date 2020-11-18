@@ -60,5 +60,5 @@
   - geerlingguy.firewall
   - geerlingguy.docker
   - singleplatform-eng.users
-  - nginxinc.nginx
-  - jdauphant.nginx
+  # - nginxinc.nginx
+  # - jdauphant.nginx

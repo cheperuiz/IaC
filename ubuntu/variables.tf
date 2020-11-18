@@ -30,26 +30,17 @@ variable "num_rk8s_lbs" {
 
 variable "num_rk8s_nodes" {
   description = "the number of nodes to be provisioned"
-  default = 8
+  # Must match sum of all num_rk8s_XXXX_nodes variables
+  default = 6
 }
 
 variable "num_rk8s_rancher_nodes"{
   description = "the number of nodes to run all roles for HA Rancher 2"
-  default = 3
-}
-
-variable "num_rk8s_master_nodes"{
-  description = "the number of nodes to run both etcd and controlplane"
-  default = 3
+  default = 1
 }
 
 variable "num_rk8s_etcd_nodes" {
   description = "the number of rk8s nodes to be assigned for etcd"
-  default = 0
-}
-
-variable "etcd_node_offset" {
-  description = "index of the first etcd node"
   default = 0
 }
 
@@ -58,9 +49,9 @@ variable "num_rk8s_controlplane_nodes" {
   default = 0
 }
 
-variable "controlplane_node_offset" {
-  description = "index of the first controlplane node"
-  default = 0
+variable "num_rk8s_master_nodes"{
+  description = "the number of nodes to run both etcd and controlplane"
+  default = 3
 }
 
 variable "num_rk8s_worker_nodes" {
@@ -68,7 +59,4 @@ variable "num_rk8s_worker_nodes" {
   default = 2
 }
 
-variable "worker_node_offset" {
-  description = "index of the first worker node"
-  default = 3
-}
+
