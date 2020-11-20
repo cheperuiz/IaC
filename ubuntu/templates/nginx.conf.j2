@@ -9,9 +9,9 @@ stream {
     upstream rancher_servers_http {
         least_conn;
         %{ for node_ip in node_ips ~}
-        server ${node_ip}:80 max_fails=3 fail_timeout=5s;
+server ${node_ip}:80 max_fails=3 fail_timeout=5s;
         %{ endfor~}
-    }
+}
     server {
         listen 80;
         proxy_pass rancher_servers_http;
@@ -20,9 +20,9 @@ stream {
     upstream rancher_servers_https {
         least_conn;
         %{ for node_ip in node_ips ~}
-        server ${node_ips[0]}:443 max_fails=3 fail_timeout=5s;
+server ${node_ip}:443 max_fails=3 fail_timeout=5s;
         %{ endfor ~}
-    }
+}
     server {
         listen     443;
         proxy_pass rancher_servers_https;

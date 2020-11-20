@@ -1,6 +1,8 @@
-# Infrastructure as Code
+# Rancher Managed Kubernetes Cluster (KVM + Terraform + Ansible + Kubernetes + RKE + Rancher 2)
 
 Provision a resources to create and manage a self-hosted/on-prem Kubernetes cluster (Managed by Rancher).
+
+[Rancher](https://rancher.com/docs/rancher/v2.x/en/overview/) is a container management platform built for organizations that deploy containers in production. Rancher makes it easy to run Kubernetes everywhere.
 
 ## Overview:
 
@@ -8,7 +10,7 @@ Adjust values on `varibles.tf` to suit your needs. With default configuration th
 
 1. Provision Cluster (KVM) Nodes for 2 Clusters:
    1. Rancher Server Cluster (1 or 3 nodes)
-      1.2. User Cluster (N nodes on the internal (NAT) network, 1 load balancer with internal + bridge networking)
+   2. User Cluster (N nodes on the internal (NAT) network, 1 load balancer with internal + bridge networking)
 2. Generate Ansible inventory files:
    1. Rancher Nodes + User Cluster Nodes
    2. Load Balancer Nodes
@@ -17,8 +19,8 @@ Adjust values on `varibles.tf` to suit your needs. With default configuration th
    2. User cluster
 4. Generate NGINX reverse proxy / load balancer configuration file (Based on rancher docs). Running a proxy on your host is useful during the setup process.
    1. Edit this file as needed depending on what you want:
-      a) To access the **rancher-ui**: Point to all nodes on your rancher cluster. Comment out the rest. (Recommended during setup)
-      b) To access your user cluster: Point to `worker` nodes on your user cluster. Comment out the rest.
+      1. To access the **rancher-ui**: Point to all nodes on your rancher cluster. Comment out the rest. (Recommended during setup)
+      2. To access your user cluster: Point to `worker` nodes on your user cluster. Comment out the rest.
 
 ## How-to:
 
@@ -50,9 +52,13 @@ Install all ansible roles:
 
 ### Provision infrastructure:
 
-To create all VMs run:
+As configured in this deployment all VMs are based on Ubuntu 20.04 and use cloud-init for initial configuration.
+Make sure to explore all terraform files and adjust to your needs, you can use any other OS as long as you take the corresponding considerations.
+
+Once configured, create all VMs simply run:
 
 ```
+terraform init
 terraform apply
 ```
 
@@ -161,6 +167,7 @@ Name your cluster and click `Create`
 Before running the provided command in the UI make sure your `KUBECONFIG` is pointing to the correct cluster!
 
 Run the provided command, it should look something like this:
+
 `kubectl apply -f https://rancher.chepetronix.tech/v3/import/aVeryRandomAndLongHashStringThatLooksLikeBase64Here.yml`
 
 Click `Done` and you will be back at the landing page (Global view) with a new entry.
@@ -197,6 +204,10 @@ kubectl -n cattle-system patch  deployments cattle-cluster-agent --patch '{
 ```
 
 Your cluster should transition from "Pending" --> "Waiting" --> "Active"
+
+If for some reason this step didn't work for you, you can check the logs of that pod by running:
+
+`kubectl -n cattle-system logs -l app=ranche`
 
 Done! You can proceed to install any workload on your cluster.
 

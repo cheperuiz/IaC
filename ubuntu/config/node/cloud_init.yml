@@ -3,8 +3,6 @@
 # examples:
 # https://cloudinit.readthedocs.io/en/latest/topics/examples.html
 
-bootcmd:
-  - echo 192.168.0.1 gw.homedns.xyz >> /etc/hosts
 
 ssh_pwauth: True
 
@@ -39,7 +37,8 @@ growpart:
 write_files:
 - path: /etc/environment
   content: |
-    NO_PROXY=10.43.0.1
+    NO_PROXY=10.43.0.0/16
   append: true
+
 
 final_message: "The system is finally up, after $UPTIME seconds"
