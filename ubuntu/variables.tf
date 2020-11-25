@@ -2,6 +2,10 @@ variable "libvirt_disk_path" {
   description = "path for libvirt pool"
   default     = "/opt/kvm/rk8s-pool"
 }
+variable "mac"{
+  description = "fixed mac addresses for load balancers"
+  default     = ["52:54:00:f2:b9:6c","52:54:00:f2:b9:6d"]
+}
 
 variable "ubuntu_20_img_url" {
   description = "ubuntu 20.04 image"
@@ -31,7 +35,7 @@ variable "num_rk8s_lbs" {
 variable "num_rk8s_nodes" {
   description = "the number of nodes to be provisioned"
   # Must match sum of all num_rk8s_XXXX_nodes variables
-  default = 6
+  default = 9
 }
 
 variable "num_rk8s_rancher_nodes"{
@@ -56,7 +60,7 @@ variable "num_rk8s_master_nodes"{
 
 variable "num_rk8s_worker_nodes" {
   description = "the number of rk8s nodes to be assigned as workers"
-  default = 2
+  default = 5
 }
 
 

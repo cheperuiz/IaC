@@ -52,7 +52,7 @@ resource "libvirt_volume" "rk8s-lb-volume" {
   name = "rk8s-lb-volume-${count.index}"
   pool = libvirt_pool.rk8s-pool.name
   base_volume_id = libvirt_volume.ubuntu-qcow2.id
-  size = 8 * 1024 * 1024 * 1024 # 8GiB
+  size = 16 * 1024 * 1024 * 1024 # 8GiB
 }
 
 resource "libvirt_domain" "domain-rk8s-lb" {
@@ -60,8 +60,9 @@ resource "libvirt_domain" "domain-rk8s-lb" {
   count = var.num_rk8s_lbs
 
   name   = "${var.vm_hostname}-lb-${count.index}"
-  memory = "4090"
-  vcpu   = 16
+  memory = "8192"
+  vcpu   = 8
+  autostart = true
 
   cloudinit = libvirt_cloudinit_disk.lbinit.id
   qemu_agent = true
@@ -75,7 +76,7 @@ resource "libvirt_domain" "domain-rk8s-lb" {
     wait_for_lease = false
     bridge = "br0"
     hostname       = "${var.vm_hostname}-lb-${count.index}"
-    mac = "52:54:00:f2:b9:6c"
+    mac = var.mac[count.index]
   }
 
   network_interface {
@@ -137,8 +138,9 @@ resource "libvirt_domain" "domain-rk8s-node" {
   count = var.num_rk8s_nodes
 
   name   = "${var.vm_hostname}-node-${count.index}"
-  memory = "4090"
-  vcpu   = 16
+  memory = "8192"
+  vcpu   = 8
+  autostart = true
 
   cloudinit = libvirt_cloudinit_disk.nodeinit.id
   qemu_agent = false

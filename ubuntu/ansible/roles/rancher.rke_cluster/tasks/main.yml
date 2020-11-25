@@ -1,0 +1,5 @@
+---
+# tasks file for rancher.rke_cluster
+- name: Trust Alhena
+  script: ../files/trust_selfsigned.sh
+  
