@@ -27,6 +27,7 @@
       - "2380"
       - "6443"
       - "9099"
+      - "10248"
       - "10250"
       - "10254"
         # Application ports
@@ -46,8 +47,8 @@
 
 
   roles: 
-    - geerlingguy.firewall
-    - geerlingguy.docker
-    - singleplatform-eng.users
+    # - geerlingguy.firewall
+    # - geerlingguy.docker
+    # - singleplatform-eng.users
     - rancher.rke_cluster
 

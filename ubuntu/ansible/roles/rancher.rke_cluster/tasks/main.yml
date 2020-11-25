@@ -1,5 +1,11 @@
 ---
 # tasks file for rancher.rke_cluster
-- name: Trust Alhena
+- name: Register alhena in hosts file
+  shell: |
+    echo '10.1.2.56 alhena
+    10.1.2.56 registry.alhena' >> /etc/hosts
+
+- name: Trust Alhena Registry
   script: ../files/trust_selfsigned.sh
+
   

@@ -52,7 +52,7 @@ resource "libvirt_volume" "rk8s-lb-volume" {
   name = "rk8s-lb-volume-${count.index}"
   pool = libvirt_pool.rk8s-pool.name
   base_volume_id = libvirt_volume.ubuntu-qcow2.id
-  size = 16 * 1024 * 1024 * 1024 # 8GiB
+  size = 16 * 1024 * 1024 * 1024 # 16GiB
 }
 
 resource "libvirt_domain" "domain-rk8s-lb" {
@@ -60,8 +60,8 @@ resource "libvirt_domain" "domain-rk8s-lb" {
   count = var.num_rk8s_lbs
 
   name   = "${var.vm_hostname}-lb-${count.index}"
-  memory = "8192"
-  vcpu   = 8
+  memory = "4096"
+  vcpu   = 4
   autostart = true
 
   cloudinit = libvirt_cloudinit_disk.lbinit.id
@@ -130,7 +130,7 @@ resource "libvirt_volume" "rk8s-node-volume" {
   name = "rk8s-node-volume-${count.index}"
   pool = libvirt_pool.rk8s-pool.name
   base_volume_id = libvirt_volume.ubuntu-qcow2.id
-  size = 16 * 1024 * 1024 * 1024 # 16GiB
+  size = 40 * 1024 * 1024 * 1024 # 40GiB
 }
 
 resource "libvirt_domain" "domain-rk8s-node" {
@@ -138,8 +138,8 @@ resource "libvirt_domain" "domain-rk8s-node" {
   count = var.num_rk8s_nodes
 
   name   = "${var.vm_hostname}-node-${count.index}"
-  memory = "8192"
-  vcpu   = 8
+  memory = "4096"
+  vcpu   = 4
   autostart = true
 
   cloudinit = libvirt_cloudinit_disk.nodeinit.id
