@@ -26,29 +26,41 @@
       - "2379"
       - "2380"
       - "6443"
+      - "6783"
       - "9099"
+      - "9796"
       - "10248"
       - "10250"
       - "10254"
         # Application ports
       - "8443"
+      - "8080"
     firewall_allowed_udp_ports:
       - "8472"
+      - "4789"
+      - "6783"
+      - "6784"
     firewall_additional_rules:
       - "iptables -A INPUT -p tcp --match multiport --dports 30000:32767 -j ACCEPT"
       - "iptables -A INPUT -p udp --match multiport --dports 30000:32767 -j ACCEPT"
 
-  tasks:
+  pre_tasks:
     - name: Update apt cache before anything is done
       apt:
         update_cache: yes
       become: true
       when: ansible_os_family == "Debian"
 
+  tasks:
+    - name: Install nfs-common
+      apt:
+        name: nfs-common
+        state: present
+
 
   roles: 
     # - geerlingguy.firewall
-    # - geerlingguy.docker
-    # - singleplatform-eng.users
+    - geerlingguy.docker
+    - singleplatform-eng.users
     - rancher.rke_cluster
 

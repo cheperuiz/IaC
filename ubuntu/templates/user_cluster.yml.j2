@@ -24,6 +24,12 @@ nodes:
     ssh_key_path: ${ssh_key}
   %{ endfor }
 
+  # Load balancer node below
+  - address: ${lb_ip}
+    user: rancherk8s
+    role: [worker]
+    ssh_key_path: ${ssh_key}
+
 services:
   etcd:
     snapshot: true

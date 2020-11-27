@@ -268,13 +268,30 @@ resource "local_file" "user_cluster" {
     num_rk8s_controlplane_nodes = var.num_rk8s_controlplane_nodes
     controlplane_node_offset = var.num_rk8s_rancher_nodes + var.num_rk8s_master_nodes + var.num_rk8s_etcd_nodes
     
-    num_rk8s_worker_nodes = var.num_rk8s_worker_nodes
+    num_rk8s_worker_nodes = var.num_rk8s_worker_nodes - 3
     worker_node_offset =  var.num_rk8s_rancher_nodes + var.num_rk8s_master_nodes + var.num_rk8s_etcd_nodes + var.num_rk8s_controlplane_nodes
+
+    lb_ip = libvirt_domain.domain-rk8s-lb[0].network_interface.1.addresses.0
  
     ssh_key = var.ssh_private_key
   })
 
   filename = "rancher/user_cluster.yml"
+  file_permission = "644"
+}
+
+resource "local_file" "ticketai_cluster" {
+  content = templatefile("templates/ticketai_cluster.yml.j2",
+  {
+    node_ips = libvirt_domain.domain-rk8s-node.*.network_interface.0.addresses.0
+    
+    num_rk8s_nodes = 3
+    worker_node_offset = var.num_rk8s_nodes - 3
+
+    ssh_key = var.ssh_private_key
+  })
+
+  filename = "rancher/ticketai_cluster.yml"
   file_permission = "644"
 }
 
